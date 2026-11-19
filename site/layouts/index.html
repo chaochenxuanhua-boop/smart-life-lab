@@ -1,0 +1,73 @@
+{{ define "main" }}
+{{- $prDisclosure := site.Params.pr_disclosure | default "※本記事にはアフィリエイト広告（PR）が含まれています" -}}
+<section class="hero-banner">
+  <div class="container">
+    <p class="hero-kicker">GADGET &amp; DAILY CONVENIENCE REVIEW LAB</p>
+    <h1 class="hero-title">失敗しないモノ選びを、客観スペック比較でスマートに。</h1>
+    <div class="hero-lead">
+      {{ .Content }}
+    </div>
+  </div>
+</section>
+
+<div class="container main-container">
+  <div class="pr-disclosure-banner" role="note" aria-label="広告表記">
+    <span class="pr-badge">PR表記</span>
+    <span class="pr-text">{{ $prDisclosure }}</span>
+  </div>
+
+  <section class="recent-posts-section" aria-labelledby="recent-posts-heading">
+    <div class="section-header">
+      <h2 id="recent-posts-heading" class="section-title">新着ガジェット・便利グッズ比較レビュー</h2>
+    </div>
+
+    {{- $posts := where site.RegularPages "Section" "posts" -}}
+    {{- $paginator := .Paginate $posts -}}
+    {{- if gt (len $paginator.Pages) 0 }}
+    <div class="post-card-grid">
+      {{- range $paginator.Pages }}
+      <article class="post-card">
+        <a href="{{ .RelPermalink }}" class="post-card-image-link">
+          {{- if .Params.ogp_image }}
+          <img src="{{ .Params.ogp_image | relURL }}" alt="{{ .Title }}" class="post-card-image" loading="lazy" width="600" height="315">
+          {{- else }}
+          <div class="post-card-placeholder">
+            <span>徹底比較ガイド</span>
+          </div>
+          {{- end }}
+        </a>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
+            {{- with index (.Params.categories | default slice) 0 }}
+            <span class="post-card-category">{{ . }}</span>
+            {{- end }}
+          </div>
+          <h3 class="post-card-title">
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          </h3>
+          <p class="post-card-excerpt">
+            {{ or .Description .Params.summary (.Summary | plainify | truncate 100) }}
+          </p>
+          {{- with .Params.tags }}
+          <div class="post-card-tags">
+            {{- range first 3 . }}
+            <span class="tag-chip">#{{ . }}</span>
+            {{- end }}
+          </div>
+          {{- end }}
+        </div>
+      </article>
+      {{- end }}
+    </div>
+    <div class="pagination-wrap">
+      {{ template "_internal/pagination.html" . }}
+    </div>
+    {{- else }}
+    <div class="empty-state-card">
+      <p>現在、最初の比較レビュー記事を準備中です。次回の自動更新をお待ちください。</p>
+    </div>
+    {{- end }}
+  </section>
+</div>
+{{ end }}

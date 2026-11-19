@@ -1,0 +1,40 @@
+baseURL = "https://example.github.io/"
+languageCode = "ja-jp"
+defaultContentLanguage = "ja"
+hasCJKLanguage = true
+title = "スマート暮らしラボ | ガジェット・便利グッズ徹底比較レビュー"
+timeZone = "Asia/Tokyo"
+enableRobotsTXT = true
+summaryLength = 110
+
+[pagination]
+  pagerSize = 12
+
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+
+[permalinks]
+  posts = "/posts/:slug/"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 3
+    ordered = false
+
+[security]
+  [security.funcs]
+    getenv = ['^HUGO_', '^CI$']
+
+[params]
+  rakuten_affiliate_id = ""
+  moshimo_amazon_id = ""
+  amazon_associate_tag = ""
+  site_brand = "スマート暮らしラボ"
+  site_subtitle = "Smart Life Gadget & Convenience Goods Review"
+  site_description = "充電器・デスク周辺機器・生活家電・暮らしの便利グッズをスペック、コスパ、実用性の3軸で客観的に徹底比較する専門レビューメディアです。"
+  pr_disclosure = "※本記事にはアフィリエイト広告（PR）が含まれています。記事内のリンクを経由して商品を購入された場合、当メディアが紹介料を受け取ることがあります。"

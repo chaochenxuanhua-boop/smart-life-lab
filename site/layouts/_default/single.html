@@ -1,0 +1,91 @@
+{{ define "main" }}
+{{- $prDisclosure := site.Params.pr_disclosure | default "※本記事にはアフィリエイト広告（PR）が含まれています" -}}
+<div class="container article-container">
+  <nav class="breadcrumb" aria-label="パンくずリスト">
+    <ol>
+      <li><a href="{{ "/" | relURL }}">ホーム</a></li>
+      <li><a href="{{ "posts/" | relURL }}">比較レビュー一覧</a></li>
+      <li aria-current="page">{{ .Title | truncate 36 }}</li>
+    </ol>
+  </nav>
+
+  <div class="pr-disclosure-banner" role="note" aria-label="広告表記">
+    <span class="pr-badge">PR</span>
+    <span class="pr-text">※本記事にはアフィリエイト広告（PR）が含まれています。各製品の評価は公表スペック・実用性に基づき客観的に比較しています。</span>
+  </div>
+
+  <article class="single-article">
+    <header class="article-header">
+      <div class="article-meta-row">
+        <time class="article-date" datetime="{{ .Date.Format "2006-01-02" }}">公開日: {{ .Date.Format "2006年01月02日" }}</time>
+        {{- if ne (.Lastmod.Format "2006-01-02") (.Date.Format "2006-01-02") }}
+        <time class="article-date updated" datetime="{{ .Lastmod.Format "2006-01-02" }}">更新日: {{ .Lastmod.Format "2006年01月02日" }}</time>
+        {{- end }}
+        {{- range .Params.categories }}
+        <a class="category-badge" href="{{ (printf "categories/%s/" (. | urlize)) | relURL }}">{{ . }}</a>
+        {{- end }}
+      </div>
+
+      <h1 class="article-title">{{ .Title }}</h1>
+
+      {{- with .Description }}
+      <p class="article-lead">{{ . }}</p>
+      {{- end }}
+
+      {{- if .Params.ogp_image }}
+      <figure class="article-eyecatch">
+        <img src="{{ .Params.ogp_image | relURL }}" alt="{{ .Title }}" width="1200" height="630">
+      </figure>
+      {{- end }}
+
+      {{- with .Params.tags }}
+      <div class="article-tags" aria-label="記事のタグ">
+        {{- range . }}
+        <a class="tag-link" href="{{ (printf "tags/%s/" (. | urlize)) | relURL }}">#{{ . }}</a>
+        {{- end }}
+      </div>
+      {{- end }}
+    </header>
+
+    {{- if and (gt .WordCount 150) .TableOfContents }}
+    <aside class="toc-box" aria-label="目次">
+      <div class="toc-title">この記事の目次</div>
+      {{ .TableOfContents }}
+    </aside>
+    {{- end }}
+
+    <div class="article-body">
+      {{ .Content }}
+    </div>
+
+    <footer class="article-footer">
+      <div class="article-policy-note">
+        <strong>スマート暮らしラボの比較ポリシー：</strong>
+        本記事で紹介しているスペック・参考価格は執筆時点の公開情報に基づいています。セール開催やモデル改定により価格・仕様が変更される場合があるため、ご購入時は必ず各ショップの販売ページにて最新情報をご確認ください。
+      </div>
+    </footer>
+  </article>
+
+  {{- $related := where (where site.RegularPages "Section" "posts") "Permalink" "ne" .Permalink -}}
+  {{- if gt (len $related) 0 }}
+  <section class="related-section" aria-labelledby="related-heading">
+    <h2 id="related-heading" class="section-title">あわせて読みたい比較レビュー</h2>
+    <div class="post-card-grid related-grid">
+      {{- range first 3 $related }}
+      <article class="post-card">
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
+          </div>
+          <h3 class="post-card-title">
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          </h3>
+          <p class="post-card-excerpt">{{ or .Description .Params.summary (.Summary | plainify | truncate 80) }}</p>
+        </div>
+      </article>
+      {{- end }}
+    </div>
+  </section>
+  {{- end }}
+</div>
+{{ end }}

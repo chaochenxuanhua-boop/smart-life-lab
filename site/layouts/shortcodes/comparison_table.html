@@ -1,0 +1,9 @@
+{{- $caption := .Get "caption" | default "主要スペック・特徴の徹底比較表" -}}
+<div class="comparison-table-section">
+  {{- if ne $caption "" }}
+  <div class="comparison-table-caption">{{ $caption }}</div>
+  {{- end }}
+  <div class="comparison-table-wrapper" role="region" aria-label="{{ $caption }}" tabindex="0">
+    {{ .Inner | markdownify }}
+  </div>
+</div>

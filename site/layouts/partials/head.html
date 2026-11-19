@@ -1,0 +1,97 @@
+{{- $siteBrand := site.Params.site_brand | default "スマート暮らしラボ" -}}
+{{- $pageTitle := cond .IsHome site.Title (printf "%s | %s" .Title $siteBrand) -}}
+{{- $description := or .Description .Params.summary site.Params.site_description -}}
+{{- $ogImage := "" -}}
+{{- if .Params.ogp_image -}}
+  {{- $ogImage = .Params.ogp_image | absURL -}}
+{{- else if site.Params.default_og_image -}}
+  {{- $ogImage = site.Params.default_og_image | absURL -}}
+{{- end -}}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ $pageTitle }}</title>
+<meta name="description" content="{{ $description }}">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="{{ .Permalink }}">
+
+<meta property="og:site_name" content="{{ $siteBrand }}">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:title" content="{{ $pageTitle }}">
+<meta property="og:description" content="{{ $description }}">
+<meta property="og:url" content="{{ .Permalink }}">
+{{- if $ogImage }}
+<meta property="og:image" content="{{ $ogImage }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+{{- end }}
+{{- if .IsPage }}
+<meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+<meta property="article:modified_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}">
+{{- range .Params.tags }}
+<meta property="article:tag" content="{{ . }}">
+{{- end }}
+{{- end }}
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $pageTitle }}">
+<meta name="twitter:description" content="{{ $description }}">
+{{- if $ogImage }}
+<meta name="twitter:image" content="{{ $ogImage }}">
+{{- end }}
+
+{{- with .OutputFormats.Get "rss" -}}
+<link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink }}" title="{{ site.Title }}">
+{{- end -}}
+<link rel="stylesheet" href="{{ "css/style.css" | relURL }}">
+
+{{- if .IsPage -}}
+  {{- $publisher := dict "@type" "Organization" "name" $siteBrand "url" site.BaseURL -}}
+  {{- $articleSchema := dict
+      "@context" "https://schema.org"
+      "@type" "Article"
+      "headline" .Title
+      "description" $description
+      "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00")
+      "dateModified" (.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+      "mainEntityOfPage" (dict "@type" "WebPage" "@id" .Permalink)
+      "author" $publisher
+      "publisher" $publisher
+  -}}
+  {{- if $ogImage -}}
+    {{- $articleSchema = merge $articleSchema (dict "image" (slice $ogImage)) -}}
+  {{- end -}}
+<script type="application/ld+json">{{ $articleSchema | jsonify | safeJS }}</script>
+  {{- with .Params.products -}}
+    {{- $items := slice -}}
+    {{- range $idx, $prod := . -}}
+      {{- $pos := add $idx 1 -}}
+      {{- $prodItem := dict
+          "@type" "ListItem"
+          "position" $pos
+          "name" ($prod.name | default "")
+          "item" (dict "@type" "Product" "name" ($prod.name | default "") "description" ($prod.pros | default ""))
+      -}}
+      {{- $items = $items | append $prodItem -}}
+    {{- end -}}
+    {{- if gt (len $items) 0 -}}
+      {{- $itemListSchema := dict
+          "@context" "https://schema.org"
+          "@type" "ItemList"
+          "name" (printf "%s 比較対象モデル一覧" $.Title)
+          "numberOfItems" (len $items)
+          "itemListElement" $items
+      -}}
+<script type="application/ld+json">{{ $itemListSchema | jsonify | safeJS }}</script>
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- $websiteSchema := dict
+      "@context" "https://schema.org"
+      "@type" "WebSite"
+      "name" $siteBrand
+      "description" site.Params.site_description
+      "url" site.BaseURL
+  -}}
+<script type="application/ld+json">{{ $websiteSchema | jsonify | safeJS }}</script>
+{{- end }}

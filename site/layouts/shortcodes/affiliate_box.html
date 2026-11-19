@@ -1,0 +1,59 @@
+{{- $name := .Get "name" | default "おすすめ注目モデル" -}}
+{{- $keyword := .Get "keyword" | default $name -}}
+{{- $asin := .Get "asin" | default "" -}}
+{{- $priceHint := .Get "price_hint" | default "" -}}
+{{- $rating := .Get "rating" | default "" -}}
+{{- $pros := .Get "pros" | default "" -}}
+{{- $cons := .Get "cons" | default "" -}}
+<section class="affiliate-box" aria-label="{{ $name }} の製品概要と購入リンク">
+  <div class="affiliate-box-header">
+    <div class="affiliate-title-wrap">
+      <span class="affiliate-pick-badge">注目モデル</span>
+      <h4 class="affiliate-product-name">{{ $name }}</h4>
+    </div>
+    <div class="affiliate-meta-badges">
+      {{- if ne $priceHint "" }}
+      <span class="meta-pill price-pill">参考価格: {{ $priceHint }}</span>
+      {{- end }}
+      {{- if ne $rating "" }}
+      <span class="meta-pill rating-pill" aria-label="評価 {{ $rating }}">総合評価: &#9733; {{ $rating }}</span>
+      {{- end }}
+    </div>
+  </div>
+
+  {{- if or (ne $pros "") (ne $cons "") }}
+  <div class="affiliate-pros-cons">
+    {{- if ne $pros "" }}
+    <div class="pros-card">
+      <div class="pc-heading pros-heading">主なメリット・強み</div>
+      <ul class="pc-list">
+        {{- range (split $pros "・") }}
+          {{- $item := trim . " " -}}
+          {{- if ne $item "" }}
+        <li>{{ $item }}</li>
+          {{- end }}
+        {{- end }}
+      </ul>
+    </div>
+    {{- end }}
+    {{- if ne $cons "" }}
+    <div class="cons-card">
+      <div class="pc-heading cons-heading">購入前の注意点</div>
+      <ul class="pc-list">
+        {{- range (split $cons "・") }}
+          {{- $item := trim . " " -}}
+          {{- if ne $item "" }}
+        <li>{{ $item }}</li>
+          {{- end }}
+        {{- end }}
+      </ul>
+    </div>
+    {{- end }}
+  </div>
+  {{- end }}
+
+  <div class="affiliate-box-cta">
+    {{- partial "affiliate_buttons.html" (dict "name" $name "keyword" $keyword "asin" $asin "Site" .Site) -}}
+    <p class="affiliate-price-note">※価格や在庫状況は変動する場合があります。最新情報はリンク先の各ショップページにてご確認ください。</p>
+  </div>
+</section>

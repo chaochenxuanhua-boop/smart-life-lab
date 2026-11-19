@@ -1,0 +1,61 @@
+{{ define "main" }}
+{{- $prDisclosure := site.Params.pr_disclosure | default "※本記事にはアフィリエイト広告（PR）が含まれています" -}}
+<div class="container main-container">
+  <header class="archive-header">
+    <p class="archive-kicker">ARCHIVE</p>
+    <h1 class="archive-title">{{ .Title }}</h1>
+    {{- with .Content }}
+    <div class="archive-desc">{{ . }}</div>
+    {{- end }}
+  </header>
+
+  <div class="pr-disclosure-banner" role="note" aria-label="広告表記">
+    <span class="pr-badge">PR表記</span>
+    <span class="pr-text">{{ $prDisclosure }}</span>
+  </div>
+
+  {{- $paginator := .Paginate .Pages -}}
+  {{- if gt (len $paginator.Pages) 0 }}
+  <div class="post-card-grid">
+    {{- range $paginator.Pages }}
+    <article class="post-card">
+      {{- if .IsPage }}
+      <a href="{{ .RelPermalink }}" class="post-card-image-link">
+        {{- if .Params.ogp_image }}
+        <img src="{{ .Params.ogp_image | relURL }}" alt="{{ .Title }}" class="post-card-image" loading="lazy" width="600" height="315">
+        {{- else }}
+        <div class="post-card-placeholder">
+          <span>比較レビュー</span>
+        </div>
+        {{- end }}
+      </a>
+      {{- end }}
+      <div class="post-card-body">
+        <div class="post-card-meta">
+          {{- if not .Date.IsZero }}
+          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
+          {{- end }}
+          {{- with index (.Params.categories | default slice) 0 }}
+          <span class="post-card-category">{{ . }}</span>
+          {{- end }}
+        </div>
+        <h2 class="post-card-title">
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </h2>
+        <p class="post-card-excerpt">
+          {{ or .Description .Params.summary (.Summary | plainify | truncate 100) }}
+        </p>
+      </div>
+    </article>
+    {{- end }}
+  </div>
+  <div class="pagination-wrap">
+    {{ template "_internal/pagination.html" . }}
+  </div>
+  {{- else }}
+  <div class="empty-state-card">
+    <p>該当する記事はまだありません。</p>
+  </div>
+  {{- end }}
+</div>
+{{ end }}

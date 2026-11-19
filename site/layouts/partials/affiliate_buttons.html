@@ -1,0 +1,67 @@
+{{- /*
+  Staged Affiliate Button Renderer
+  Phase 1 (both moshimo_amazon_id & amazon_associate_tag empty): renders ONLY Rakuten button (single-button).
+  Phase 2 (either moshimo_amazon_id or amazon_associate_tag set): renders BOTH Amazon & Rakuten side-by-side (two-buttons).
+*/ -}}
+{{- $name := .name | default "対象商品" -}}
+{{- $keyword := .keyword | default $name -}}
+{{- $asin := trim (.asin | default "") " " -}}
+
+{{- $siteParams := site.Params -}}
+{{- if .Site -}}
+  {{- $siteParams = .Site.Params -}}
+{{- end -}}
+
+{{- $rakutenId := trim (or (getenv "HUGO_PARAMS_RAKUTEN_AFFILIATE_ID") (getenv "HUGO_RAKUTEN_AFFILIATE_ID") $siteParams.rakuten_affiliate_id "") " " -}}
+{{- $moshimoId := trim (or (getenv "HUGO_PARAMS_MOSHIMO_AMAZON_ID") (getenv "HUGO_MOSHIMO_AMAZON_ID") $siteParams.moshimo_amazon_id "") " " -}}
+{{- $amazonTag := trim (or (getenv "HUGO_PARAMS_AMAZON_ASSOCIATE_TAG") (getenv "HUGO_AMAZON_ASSOCIATE_TAG") $siteParams.amazon_associate_tag "") " " -}}
+
+{{- $rakutenSearchUrl := printf "https://search.rakuten.co.jp/search/mall/%s/" (urlquery $keyword) -}}
+{{- $rakutenHref := $rakutenSearchUrl -}}
+{{- if ne $rakutenId "" -}}
+  {{- $encodedRakutenDest := urlquery $rakutenSearchUrl -}}
+  {{- $rakutenHref = printf "https://hb.afl.rakuten.co.jp/hgc/%s/?pc=%s&m=%s" $rakutenId $encodedRakutenDest $encodedRakutenDest -}}
+{{- end -}}
+
+{{- $asinMatches := findRE "^[A-Za-z0-9]{10}$" $asin -}}
+{{- $hasValidAsin := gt (len $asinMatches) 0 -}}
+{{- $amazonBaseUrl := "" -}}
+{{- if $hasValidAsin -}}
+  {{- $amazonBaseUrl = printf "https://www.amazon.co.jp/dp/%s" $asin -}}
+{{- else -}}
+  {{- $amazonBaseUrl = printf "https://www.amazon.co.jp/s?k=%s" (urlquery $keyword) -}}
+{{- end -}}
+
+{{- $showAmazon := false -}}
+{{- $amazonHref := "" -}}
+{{- if ne $moshimoId "" -}}
+  {{- $showAmazon = true -}}
+  {{- $amazonHref = printf "https://af.moshimo.com/af/c/click?a_id=%s&p_id=170&pc_id=185&pl_id=4062&url=%s" (urlquery $moshimoId) (urlquery $amazonBaseUrl) -}}
+{{- else if ne $amazonTag "" -}}
+  {{- $showAmazon = true -}}
+  {{- if $hasValidAsin -}}
+    {{- $amazonHref = printf "%s?tag=%s" $amazonBaseUrl (urlquery $amazonTag) -}}
+  {{- else -}}
+    {{- $amazonHref = printf "%s&tag=%s" $amazonBaseUrl (urlquery $amazonTag) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if $showAmazon }}
+<div class="affiliate-btn-grid two-buttons">
+  <a class="affiliate-btn btn-amazon" href="{{ $amazonHref | safeURL }}" target="_blank" rel="nofollow sponsored noopener noreferrer" aria-label="{{ $name }} をAmazonで見る">
+    <span class="btn-main-text">Amazonで見る</span>
+    <span class="btn-sub-text">在庫・最新価格をチェック</span>
+  </a>
+  <a class="affiliate-btn btn-rakuten" href="{{ $rakutenHref | safeURL }}" target="_blank" rel="nofollow sponsored noopener noreferrer" aria-label="{{ $name }} を楽天市場で見る">
+    <span class="btn-main-text">楽天市場で見る</span>
+    <span class="btn-sub-text">ポイント還元・最安値を比較</span>
+  </a>
+</div>
+{{- else }}
+<div class="affiliate-btn-grid single-button">
+  <a class="affiliate-btn btn-rakuten" href="{{ $rakutenHref | safeURL }}" target="_blank" rel="nofollow sponsored noopener noreferrer" aria-label="{{ $name }} を楽天市場で見る">
+    <span class="btn-main-text">楽天市場で見る</span>
+    <span class="btn-sub-text">最新価格・ポイント還元をチェック</span>
+  </a>
+</div>
+{{- end }}

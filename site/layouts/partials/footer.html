@@ -1,0 +1,29 @@
+{{- $siteBrand := site.Params.site_brand | default "スマート暮らしラボ" -}}
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-about">
+      <h2 class="footer-heading">{{ $siteBrand }}</h2>
+      <p class="footer-desc">
+        {{ site.Params.site_description }}
+      </p>
+      <p class="footer-disclosure">
+        【広告掲載・アフィリエイトプログラムについて】<br>
+        当メディアは、楽天アフィリエイト、もしもアフィリエイト、Amazonアソシエイト・プログラム等のアフィリエイトプログラムに参加しています。適格販売により収入を得ることがありますが、商品の選定・比較評価は公表スペックおよび実用性に基づき客観的に行っております。商品の最新価格・在庫状況・詳細仕様は各販売店のページにてご確認ください。
+      </p>
+    </div>
+    <div class="footer-links-block">
+      <h2 class="footer-heading">メニュー・規約</h2>
+      <ul class="footer-links">
+        <li><a href="{{ "/" | relURL }}">トップページ</a></li>
+        <li><a href="{{ "posts/" | relURL }}">新着レビュー記事一覧</a></li>
+        <li><a href="{{ "categories/" | relURL }}">カテゴリ一覧</a></li>
+        <li><a href="{{ "tags/" | relURL }}">キーワードタグ一覧</a></li>
+        <li><a href="{{ "privacy-policy.html" | relURL }}" data-compliance-link="/privacy-policy.html">Privacy Policy（プライバシーポリシー）</a></li>
+        <li><a href="{{ "terms-of-service.html" | relURL }}" data-compliance-link="/terms-of-service.html">Terms of Service（利用規約）</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>&copy; {{ now.Year }} {{ $siteBrand }} All Rights Reserved.</p>
+  </div>
+</footer>

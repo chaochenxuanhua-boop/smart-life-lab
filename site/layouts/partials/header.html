@@ -1,0 +1,23 @@
+{{- $siteBrand := site.Params.site_brand | default "スマート暮らしラボ" -}}
+{{- $siteSubtitle := site.Params.site_subtitle | default "Smart Life Gadget & Convenience Goods Review" -}}
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="brand-group">
+      <a class="brand-logo" href="{{ "/" | relURL }}">
+        <span class="brand-icon" aria-hidden="true">&#9670;</span>
+        <span class="brand-text">
+          <span class="brand-title">{{ $siteBrand }}</span>
+          <span class="brand-subtitle">{{ $siteSubtitle }}</span>
+        </span>
+      </a>
+    </div>
+    <nav class="site-nav" aria-label="メインナビゲーション">
+      <ul class="nav-list">
+        <li><a href="{{ "/" | relURL }}" class="nav-link">ホーム</a></li>
+        <li><a href="{{ "posts/" | relURL }}" class="nav-link">比較レビュー一覧</a></li>
+        <li><a href="{{ "categories/" | relURL }}" class="nav-link">カテゴリ</a></li>
+        <li><a href="{{ "tags/" | relURL }}" class="nav-link">タグ</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
