@@ -9,6 +9,28 @@
 {{- end -}}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F0ZLS15LNQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-F0ZLS15LNQ');
+  document.addEventListener('click', function(e) {
+    var el = e.target && e.target.closest ? e.target.closest('a, button') : null;
+    if (!el || typeof gtag !== 'function') return;
+    var label = (el.textContent || '').trim().slice(0, 60);
+    var href = el.getAttribute('href') || '';
+    if (el.id || (href && href.indexOf('http') === 0)) {
+      gtag('event', 'cta_engagement', {
+        element_id: el.id || 'link',
+        element_text: label,
+        link_url: href,
+        page_path: location.pathname
+      });
+    }
+  });
+</script>
 <title>{{ $pageTitle }}</title>
 <meta name="description" content="{{ $description }}">
 <meta name="robots" content="index, follow, max-image-preview:large">
